@@ -1,0 +1,12 @@
+{{$app := env "APP_NAME"}}
+<VirtualHost *:80>
+  #ServerName web
+  {{range service $app}}
+  <Proxy balancer://{{$app}}>
+  BalancerMember http://{{.Address}}:{{.Port}}
+  ProxySet lbmethod=bybusyness
+  </Proxy>
+  ProxyPass / balancer://{{$app}}/
+  ProxyPassReverse / balancer://{{$app}}/
+  {{end}}
+</VirtualHost>
