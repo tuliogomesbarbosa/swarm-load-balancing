@@ -1,12 +1,14 @@
 {{$app := env "APP_NAME"}}
 <VirtualHost *:80>
   #ServerName web
-  {{range service $app}}
   <Proxy balancer://{{$app}}>
-  BalancerMember http://{{.Address}}:{{.Port}}
-  ProxySet lbmethod=bybusyness
+    {{range service $app}} BalancerMember http://{{.Address}}:{{.Port}}
+    {{end}} ProxySet lbmethod=bybusyness
   </Proxy>
-  ProxyPass / balancer://{{$app}}/
-  ProxyPassReverse / balancer://{{$app}}/
+  {{range $tag, $service := service $app | byTag}}{{$tagArr := $tag | split "="}}{{$ctx := index $tagArr 1}}
+  <Location /{{$ctx}}>
+    ProxyPass        balancer://{{$app}}
+    ProxyPassReverse balancer://{{$app}}
+  </Location>
   {{end}}
 </VirtualHost>

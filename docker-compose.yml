@@ -22,7 +22,7 @@ services:
       - APP_PORT=4000
       - REDIS_IP=redis
       - REDIS_PORT=6379
-      - SERVICE_TAGS=route1
+      - "SERVICE_TAGS=endpoint1=server,endpoint2=server/socket"
     depends_on:
       - redis
     networks:
